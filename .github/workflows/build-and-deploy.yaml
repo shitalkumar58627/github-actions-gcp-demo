@@ -13,9 +13,10 @@ jobs:
     - name: code checkout
       uses: actions/checkout@v2
 
-    - name: Install gcloud CLI and kubectl
+    - name: Install kubectl
       run: |
-        gcloud components install kubectl
+        sudo apt-get update
+        sudo apt-get install kubectl
 
     - name: Configure kubectl for GKE
       run: |
