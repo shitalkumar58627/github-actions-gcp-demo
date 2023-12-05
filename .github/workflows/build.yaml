@@ -20,5 +20,5 @@ jobs:
         env: null
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          docker build -t $DOCKERHUB_USERNAME/demo/nginx:latest .
-          docker push $DOCKERHUB_USERNAME/demo/nginx:latest
+          docker build -t $DOCKERHUB_USERNAME/nginx:latest .
+          docker push $DOCKERHUB_USERNAME/nginx:latest
