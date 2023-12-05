@@ -29,3 +29,12 @@ jobs:
         docker build -t $DOCKERHUB_USERNAME/nginx:latest .
         docker login -u $DOCKERHUB_USERNAME -p "${{ secrets.DOCKERHUB_PASSWORD }}"
         docker push $DOCKERHUB_USERNAME/nginx:latest
+
+    
+    - name: deploy to gke
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+      run: |
+        gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1
+        sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yaml
+        kubectl apply -f resources.yaml
