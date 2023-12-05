@@ -26,7 +26,7 @@ jobs:
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       run: |
         docker build -t $DOCKERHUB_USERNAME/demo/nginx:latest .
-        docker login -u $DOCKERHUB_USERNAME -p ${{ secrets.DOCKERHUB_TOKEN }}
+        docker login -u $DOCKERHUB_USERNAME -p "${{ secrets.DOCKERHUB_PASSWORD }}"
         docker push $DOCKERHUB_USERNAME/demo/nginx:latest
 
     - name: Deploy to GKE
