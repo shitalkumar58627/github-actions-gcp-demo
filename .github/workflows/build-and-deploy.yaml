@@ -13,12 +13,13 @@ jobs:
     - name: code checkout
       uses: actions/checkout@v2
 
-    - name: Set up Google Cloud CLI
-      uses: google-github-actions/setup-gcloud@v0
-      with:
-        project_id: ${{ secrets.GOOGLE_PROJECT }}
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        export_default_credentials: true
+    - name: Authenticate with Google Cloud
+      run: gcloud auth login
+
+    - name: Install kubectl
+      run: |
+        sudo apt-get update
+        sudo apt-get install kubectl
 
     - name: Configure kubectl for GKE
       run: |
