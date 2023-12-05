@@ -13,13 +13,22 @@ jobs:
     - name: code checkout
       uses: actions/checkout@v2
 
-    - name: Install gcloud CLI
-      uses: google-github-actions/setup-gcloud@v0
-      with:
-        project_id: ${{ secrets.GOOGLE_PROJECT }}
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        components: 'kubectl'
-        export_default_credentials: true
+    - name: Install gcloud CLI and kubectl
+      run: |
+        gcloud components install kubectl
+
+    - name: Configure kubectl for GKE
+      run: |
+        gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1
+        sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yaml
+        kubectl apply -f resources.yaml
+
+      env:
+        CLOUDSDK_METRICS_ENVIRONMENT: github-actions-setup-gcloud
+        GCLOUD_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+        GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/github-actions-gcp-demo/github-actions-gcp-demo/ad40b2e61a401e79961d7293
+        GOOGLE_GHA_CREDS_PATH: /home/runner/work/github-actions-gcp-demo/github-actions-gcp-demo/ad40b2e61a401e79961d7293
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
 
     - name: Build and push the Docker image to Docker Hub
       env:
@@ -28,11 +37,3 @@ jobs:
         docker build -t $DOCKERHUB_USERNAME/nginx:latest .
         docker login -u $DOCKERHUB_USERNAME -p "${{ secrets.DOCKERHUB_PASSWORD }}"
         docker push $DOCKERHUB_USERNAME/nginx:latest
-
-    - name: Deploy to GKE
-      env:
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-      run: |
-        gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1
-        sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yaml
-        kubectl apply -f resources.yaml
